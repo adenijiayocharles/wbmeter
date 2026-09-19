@@ -8,11 +8,16 @@ Track delivery against the two-week phases in [PRD.md, Section 40](PRD.md#40-two
 
 - [x] Add the SwiftUI camera screen and camera permission state handling.
 - [x] Add the rear-camera preview, central target, instruction, and Measure control.
-- [x] Build the generic iOS device target.
-- [ ] Verify not-determined, authorized, denied, and restricted permission paths on an iPhone.
-- [ ] Verify live preview, target framing, and background/foreground session restart on an iPhone.
-- [ ] Record the tested iPhone model and iOS version.
+- [x] Build for a generic iOS device and for the connected iPhone.
+- [x] Verify the authorized path, live rear-camera preview, target, and instruction on an iPhone.
+- [x] Verify the camera session stops on background and resumes on foreground.
+- [ ] Verify the first-launch not-determined prompt on an iPhone.
+- [ ] Verify the denied state and Settings recovery path on an iPhone.
+- [ ] Verify restricted permission handling on an iPhone.
+- [x] Record the test device: iPhone 13 (iPhone14,5), iOS 27.0 (24A437).
 - [ ] Pass the Phase 0 exit gate.
+
+**Device run:** Signed and launched on iPhone 13 (iPhone14,5), iOS 27.0 (24A437). The live preview showed the monitor feed with the ROI and instruction. Opening Settings removed the camera-use indicator; foregrounding WB Meter restored it and resumed the preview. The app’s Camera switch was on in Settings. A temporary fresh bundle also opened with camera access already granted, so the not-determined prompt was not observed. Denied and restricted runtime states remain unverified; the temporary app was removed.
 
 ## Phase 1 — Sensor Capture and ROI
 
