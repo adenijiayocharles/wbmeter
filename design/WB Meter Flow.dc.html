@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8">
+<style>body{margin:0;background:#e4e4e9;font-family:-apple-system,'SF Pro Text',system-ui,sans-serif}</style>
+</helmet>
+<div style="min-height:100vh;box-sizing:border-box;padding:40px;display:flex;gap:36px;overflow-x:auto;align-items:flex-start">
+<sc-for list="{{ screens }}" as="s" hint-placeholder-count="5">
+<div style="display:flex;flex-direction:column;gap:14px;align-items:center;flex-shrink:0">
+<div style="font-size:13px;font-weight:600;color:#3a3a3c;letter-spacing:0.2px">{{ s.label }}</div>
+<dc-import name="WB Meter" initial-screen="{{ s.screen }}" hint-size="393,852"></dc-import>
+</div>
+</sc-for>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      screens: [
+        { screen: 'measure', label: '1 · Measure' },
+        { screen: 'measuring', label: '2 · Measuring' },
+        { screen: 'result', label: '3 · Result' },
+        { screen: 'history', label: '4 · History' },
+        { screen: 'settings', label: '5 · Settings' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

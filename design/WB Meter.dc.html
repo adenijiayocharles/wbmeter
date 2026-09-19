@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8">
+<style>
+body{margin:0;background:#e4e4e9;font-family:-apple-system,'SF Pro Text',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:56px 24px;box-sizing:border-box">
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" width="{{ 393 }}" height="{{ 852 }}" hint-size="393,852">
+<div style="height:100%;width:100%;display:flex;flex-direction:column;position:relative;overflow:hidden;background:{{ bgColor }}">
+
+<div style="padding-top:54px;flex-shrink:0">
+<div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 6px;border-bottom:0.5px solid rgba(255,255,255,0.12)">
+<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center">
+<sc-if value="{{ navShowBack }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ goBackFromResult }}" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer">
+<svg width="12" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#0A84FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+</sc-if>
+</div>
+<div style="font-size:17px;font-weight:600;color:#fff;letter-spacing:-0.2px">{{ navTitle }}</div>
+<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center">
+<sc-if value="{{ navShowGear }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ openSettings }}" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer">
+<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#EBEBF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82A1.65 1.65 0 003 13.09H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82L4.2 6.12a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V2a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V6a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"></path></svg>
+</div>
+</sc-if>
+</div>
+</div>
+</div>
+
+<div style="flex:1;position:relative;overflow:hidden">
+
+<sc-if value="{{ isCamera }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 42%,#3c3c3e 0%,#232325 55%,#0c0c0d 100%)"></div>
+
+<div style="position:absolute;top:14px;left:16px;right:16px;display:flex;align-items:center;gap:7px">
+<sc-if value="{{ isMeasuring }}" hint-placeholder-val="{{ false }}">
+<div style="width:6px;height:6px;border-radius:3px;background:#FFD60A"></div>
+<span style="font-size:13px;color:rgba(255,255,255,0.75);letter-spacing:-0.1px">Measuring…</span>
+</sc-if>
+<sc-if value="{{ isNotMeasuring }}" hint-placeholder-val="{{ true }}">
+<div style="width:6px;height:6px;border-radius:3px;background:#30D158"></div>
+<span style="font-size:13px;color:rgba(255,255,255,0.75);letter-spacing:-0.1px">Ready</span>
+</sc-if>
+</div>
+
+<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-58%);width:220px;height:220px">
+<div style="position:absolute;inset:0;border:1px solid rgba(255,255,255,0.28);border-radius:4px"></div>
+<div style="position:absolute;top:-2px;left:-2px;width:26px;height:26px;border-top:2.5px solid #fff;border-left:2.5px solid #fff;border-radius:3px 0 0 0"></div>
+<div style="position:absolute;top:-2px;right:-2px;width:26px;height:26px;border-top:2.5px solid #fff;border-right:2.5px solid #fff;border-radius:0 3px 0 0"></div>
+<div style="position:absolute;bottom:-2px;left:-2px;width:26px;height:26px;border-bottom:2.5px solid #fff;border-left:2.5px solid #fff;border-radius:0 0 0 3px"></div>
+<div style="position:absolute;bottom:-2px;right:-2px;width:26px;height:26px;border-bottom:2.5px solid #fff;border-right:2.5px solid #fff;border-radius:0 0 3px 0"></div>
+</div>
+
+<div style="position:absolute;top:calc(50% + 122px);left:0;right:0;text-align:center;padding:0 40px">
+<sc-if value="{{ isNotMeasuring }}" hint-placeholder-val="{{ true }}">
+<span style="font-size:14px;color:rgba(255,255,255,0.65);letter-spacing:-0.1px">Place a grey card inside the frame</span>
+</sc-if>
+<sc-if value="{{ isMeasuring }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+<span style="font-size:14px;color:rgba(255,255,255,0.8)">Hold steady</span>
+<div style="display:flex;gap:6px">
+<sc-for list="{{ progressSegs }}" as="seg" hint-placeholder-count="3">
+<div style="width:30px;height:3px;border-radius:2px;background:{{ seg.color }}"></div>
+</sc-for>
+</div>
+<span style="font-size:12px;color:rgba(255,255,255,0.45)">{{ stepLabel }}</span>
+</div>
+</sc-if>
+</div>
+
+<div style="position:absolute;bottom:0;left:0;right:0;height:112px;display:flex;align-items:center;justify-content:space-between;padding:0 30px 8px">
+<div onClick="{{ openHistory }}" style="width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center;cursor:pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+</div>
+<div onClick="{{ startMeasure }}" style="width:74px;height:74px;border-radius:37px;border:3.5px solid {{ shutterRing }};display:flex;align-items:center;justify-content:center;opacity:{{ shutterOpacity }};cursor:{{ shutterCursor }}">
+<div style="width:60px;height:60px;border-radius:30px;background:{{ shutterFill }}"></div>
+</div>
+<div style="width:44px;height:44px"></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isResult }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;overflow:auto;padding:22px 20px 28px">
+<sc-if value="{{ savedFlash }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;top:8px;left:20px;right:20px;text-align:center;font-size:12px;color:#30D158;letter-spacing:-0.1px">Measurement saved</div>
+</sc-if>
+<div style="margin-top:14px">
+<div style="font-size:13px;color:rgba(255,255,255,0.5);letter-spacing:-0.1px">Recommended white balance</div>
+<div style="display:flex;align-items:baseline;gap:6px;margin-top:4px">
+<span style="font-size:64px;font-weight:700;color:#fff;letter-spacing:-1px;font-variant-numeric:tabular-nums">4500</span>
+<span style="font-size:24px;font-weight:600;color:rgba(255,255,255,0.55)">K</span>
+</div>
+</div>
+
+<div style="margin-top:26px;border-top:0.5px solid rgba(255,255,255,0.14)">
+<sc-for list="{{ resultRows }}" as="row" hint-placeholder-count="6">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:13px 2px;border-bottom:0.5px solid rgba(255,255,255,0.12)">
+<span style="font-size:15px;color:rgba(255,255,255,0.6)">{{ row.label }}</span>
+<span style="font-size:15px;color:{{ row.color }};font-weight:500;font-variant-numeric:tabular-nums">{{ row.value }}</span>
+</div>
+</sc-for>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:26px">
+<div onClick="{{ saveMeasurement }}" style="height:50px;border-radius:10px;background:#0A84FF;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:#fff;cursor:pointer">{{ saveLabel }}</div>
+<div onClick="{{ goBackFromResult }}" style="height:50px;border-radius:10px;border:1px solid rgba(255,255,255,0.28);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500;color:#fff;cursor:pointer">Measure again</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isHistory }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;overflow:auto">
+<sc-for list="{{ historyRows }}" as="row" hint-placeholder-count="3">
+<div style="position:relative;overflow:hidden">
+<div style="position:absolute;top:0;right:0;bottom:0;display:flex">
+<div onClick="{{ row.onRename }}" style="width:70px;background:#48484a;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;cursor:pointer">Rename</div>
+<div onClick="{{ row.onDelete }}" style="width:70px;background:#FF453A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;cursor:pointer">Delete</div>
+</div>
+<div onPointerDown="{{ row.onDown }}" onPointerMove="{{ row.onMove }}" onPointerUp="{{ row.onUp }}" style="position:relative;background:#1C1C1E;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:0.5px solid rgba(255,255,255,0.1);transform:translateX({{ row.x }}px);transition:{{ row.transition }};touch-action:pan-y">
+<div style="min-width:0">
+<div style="font-size:16px;color:#fff;letter-spacing:-0.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ row.name }}</div>
+<div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:2px">{{ row.k }} K · Δuv {{ row.duvStr }}</div>
+</div>
+<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+<span style="font-size:12px;color:rgba(255,255,255,0.4)">{{ row.when }}</span>
+<svg width="7" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="rgba(255,255,255,0.3)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;overflow:auto;padding-bottom:20px">
+
+<div style="padding:22px 32px 8px;font-size:13px;color:rgba(255,255,255,0.45)">Camera</div>
+<div style="margin:0 16px;background:#2C2C2E;border-radius:10px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;min-height:44px">
+<span style="font-size:16px;color:#fff">Active camera</span>
+<span style="font-size:16px;color:rgba(255,255,255,0.45)">{{ selectedCamera }}</span>
+</div>
+</div>
+
+<div style="padding:22px 32px 8px;font-size:13px;color:rgba(255,255,255,0.45)">Measurement</div>
+<div style="margin:0 16px;background:#2C2C2E;border-radius:10px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;min-height:44px;border-bottom:0.5px solid rgba(255,255,255,0.1)">
+<span style="font-size:16px;color:#fff">Kelvin rounding</span>
+<span style="font-size:16px;color:rgba(255,255,255,0.45)">100 K</span>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;min-height:44px;border-bottom:0.5px solid rgba(255,255,255,0.1)">
+<span style="font-size:16px;color:#fff">Stability samples</span>
+<span style="font-size:16px;color:rgba(255,255,255,0.45)">{{ stabilityLabel }}</span>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;min-height:44px;border-bottom:0.5px solid rgba(255,255,255,0.1)">
+<span style="font-size:16px;color:#fff">Save measurements automatically</span>
+<div onClick="{{ toggleAutoSave }}" style="width:51px;height:31px;border-radius:16px;background:{{ autoSaveTrack }};position:relative;cursor:pointer;flex-shrink:0">
+<div style="position:absolute;top:2px;left:{{ autoSaveThumb }}px;width:27px;height:27px;border-radius:14px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.3)"></div>
+</div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;min-height:44px">
+<span style="font-size:16px;color:#fff">Debug mode</span>
+<div onClick="{{ toggleDebug }}" style="width:51px;height:31px;border-radius:16px;background:{{ debugTrack }};position:relative;cursor:pointer;flex-shrink:0">
+<div style="position:absolute;top:2px;left:{{ debugThumb }}px;width:27px;height:27px;border-radius:14px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.3)"></div>
+</div>
+</div>
+</div>
+
+<div style="padding:22px 32px 8px;font-size:13px;color:rgba(255,255,255,0.45)">Data</div>
+<div style="margin:0 16px;background:#2C2C2E;border-radius:10px;overflow:hidden">
+<div onClick="{{ exportData }}" style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;min-height:44px;cursor:pointer">
+<span style="font-size:16px;color:#0A84FF">Export calibration data</span>
+<span style="font-size:13px;color:rgba(255,255,255,0.45)">{{ exportMsg }}</span>
+</div>
+</div>
+
+<div style="padding:22px 32px 8px;font-size:13px;color:rgba(255,255,255,0.45)">About</div>
+<div style="margin:0 16px;background:#2C2C2E;border-radius:10px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;min-height:44px;border-bottom:0.5px solid rgba(255,255,255,0.1)">
+<span style="font-size:16px;color:#fff">App version</span>
+<span style="font-size:16px;color:rgba(255,255,255,0.45)">1.4.2 (128)</span>
+</div>
+</div>
+<div style="padding:10px 32px 0;font-size:13px;line-height:18px;color:rgba(255,255,255,0.4)">All measurements are processed entirely on-device. No images or readings leave your iPhone.</div>
+</div>
+</sc-if>
+
+</div>
+
+<sc-if value="{{ showTabBar }}" hint-placeholder-val="{{ true }}">
+<div style="flex-shrink:0;padding-top:8px;padding-bottom:22px;display:flex;align-items:center;justify-content:space-around;border-top:0.5px solid rgba(255,255,255,0.14);background:{{ bgColor }}">
+<div onClick="{{ openMeasure }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;width:80px">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{ tabMeasureColor }}" stroke-width="1.8"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="4.5"></circle><circle cx="12" cy="12" r="1"></circle></svg>
+<span style="font-size:11px;color:{{ tabMeasureColor }}">Measure</span>
+</div>
+<div onClick="{{ openHistory }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;width:80px">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{ tabHistoryColor }}" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+<span style="font-size:11px;color:{{ tabHistoryColor }}">History</span>
+</div>
+<div onClick="{{ openSettings }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;width:80px">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{ tabSettingsColor }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82A1.65 1.65 0 003 13.09H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82L4.2 6.12a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V2a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V6a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"></path></svg>
+<span style="font-size:11px;color:{{ tabSettingsColor }}">Settings</span>
+</div>
+</div>
+</sc-if>
+
+</div>
+</x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;initialScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;measure&quot;,&quot;options&quot;:[&quot;measure&quot;,&quot;measuring&quot;,&quot;result&quot;,&quot;history&quot;,&quot;settings&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;General&quot;},&quot;selectedCamera&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Sony A6700&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Measurement&quot;},&quot;stabilitySamples&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;min&quot;:1,&quot;max&quot;:6,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Measurement&quot;},&quot;autoSaveDefault&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Measurement&quot;}}">
+class Component extends DCLogic {
+  state = {
+    screen: undefined,
+    step: undefined,
+    savedFlash: false,
+    history: [
+      { id: 1, name: 'Studio Interview', k: 4500, duv: -0.0018, when: 'Today, 2:14 PM' },
+      { id: 2, name: 'Sunday Service', k: 4200, duv: 0.0024, when: 'Sep 14, 11:02 AM' },
+      { id: 3, name: 'Window Light Test', k: 5600, duv: 0.0006, when: 'Sep 10, 4:47 PM' }
+    ],
+    autoSave: null,
+    debugMode: false,
+    exportMsg: '',
+    dragIdx: null,
+    dragStartX: 0,
+    dragBaseX: 0,
+    liveX: 0,
+    openIdx: -1
+  };
+
+  componentDidMount() {
+    const init = this.props.initialScreen ?? 'measure';
+    const n = this.props.stabilitySamples ?? 3;
+    this.setState({ screen: init, step: init === 'measuring' ? Math.max(1, n - 1) : 0 });
+  }
+
+  componentWillUnmount() {
+    [this._t1, this._t2, this._t3, this._saveT, this._expT].forEach(t => t && clearTimeout(t));
+  }
+
+  fmtDuv(v) {
+    return (v >= 0 ? '+' : '\u2212') + Math.abs(v).toFixed(4);
+  }
+
+  totalSteps() { return this.props.stabilitySamples ?? 3; }
+
+  startMeasure = () => {
+    if (this.state.screen !== 'measure') return;
+    const n = this.totalSteps();
+    this.setState({ screen: 'measuring', step: 1 });
+    const gap = 650;
+    this._t1 = setTimeout(() => this.setState(s => ({ step: Math.min(2, n) })), gap);
+    this._t2 = setTimeout(() => this.setState(s => ({ step: n })), gap * 2);
+    this._t3 = setTimeout(() => this.setState({ screen: 'result' }), gap * 2 + 700);
+  };
+
+  goBackFromResult = () => this.setState({ screen: 'measure', step: 0 });
+  openMeasure = () => this.setState({ screen: 'measure', step: 0, openIdx: -1 });
+  openHistory = () => this.setState({ screen: 'history', openIdx: -1 });
+  openSettings = () => this.setState({ screen: 'settings', openIdx: -1 });
+
+  saveMeasurement = () => {
+    const entry = { id: Date.now(), name: 'Measurement ' + (this.state.history.length + 1), k: 4500, duv: -0.0021, when: 'Just now' };
+    this.setState(s => ({ history: [entry, ...s.history], savedFlash: true }));
+    clearTimeout(this._saveT);
+    this._saveT = setTimeout(() => this.setState({ savedFlash: false }), 1800);
+  };
+
+  deleteEntry(idx) {
+    this.setState(s => ({ history: s.history.filter((_, i) => i !== idx), openIdx: -1 }));
+  }
+
+  renameEntry(idx) {
+    const cur = this.state.history[idx];
+    const name = window.prompt('Rename measurement', cur.name);
+    this.setState(s => {
+      if (!name) return { openIdx: -1 };
+      const h = [...s.history];
+      h[idx] = { ...h[idx], name };
+      return { history: h, openIdx: -1 };
+    });
+  }
+
+  onSwipeDown(idx, e) {
+    if (e.target.setPointerCapture) { try { e.target.setPointerCapture(e.pointerId); } catch (err) {} }
+    const base = this.state.openIdx === idx ? -140 : 0;
+    this.setState({ dragIdx: idx, dragStartX: e.clientX, dragBaseX: base, liveX: base });
+  }
+
+  onSwipeMove(e) {
+    if (this.state.dragIdx === null) return;
+    let x = this.state.dragBaseX + (e.clientX - this.state.dragStartX);
+    x = Math.max(-140, Math.min(0, x));
+    this.setState({ liveX: x });
+  }
+
+  onSwipeUp() {
+    if (this.state.dragIdx === null) return;
+    const open = this.state.liveX < -70;
+    this.setState({ openIdx: open ? this.state.dragIdx : -1, dragIdx: null, liveX: 0 });
+  }
+
+  toggleAutoSave = () => this.setState(s => ({ autoSave: !(s.autoSave === null ? (this.props.autoSaveDefault ?? true) : s.autoSave) }));
+  toggleDebug = () => this.setState(s => ({ debugMode: !s.debugMode }));
+
+  exportData = () => {
+    this.setState({ exportMsg: 'Exporting\u2026' });
+    clearTimeout(this._expT);
+    this._expT = setTimeout(() => this.setState({ exportMsg: '' }), 1500);
+  };
+
+  renderVals() {
+    const s = this.state;
+    if (s.screen === undefined) return { isCamera: true, isMeasuring: false, isNotMeasuring: true, isResult: false, isHistory: false, isSettings: false, bgColor: '#000', navTitle: 'WB Meter', showTabBar: true };
+    const isCamera = s.screen === 'measure' || s.screen === 'measuring';
+    const isMeasuring = s.screen === 'measuring';
+    const isResult = s.screen === 'result';
+    const isHistory = s.screen === 'history';
+    const isSettings = s.screen === 'settings';
+    const n = this.totalSteps();
+
+    const autoSaveOn = s.autoSave === null ? (this.props.autoSaveDefault ?? true) : s.autoSave;
+    const selectedCamera = this.props.selectedCamera ?? 'Sony A6700';
+
+    const progressSegs = [];
+    for (let i = 1; i <= n; i++) progressSegs.push({ color: i <= s.step ? '#0A84FF' : 'rgba(255,255,255,0.22)' });
+
+    const historyRows = s.history.map((e, i) => ({
+      ...e,
+      duvStr: this.fmtDuv(e.duv),
+      x: s.dragIdx === i ? s.liveX : (s.openIdx === i ? -140 : 0),
+      transition: s.dragIdx === i ? 'none' : 'transform .2s ease',
+      onDown: (ev) => this.onSwipeDown(i, ev),
+      onMove: (ev) => this.onSwipeMove(ev),
+      onUp: () => this.onSwipeUp()
+    }));
+    historyRows.forEach((r, i) => { r.onRename = () => this.renameEntry(i); r.onDelete = () => this.deleteEntry(i); });
+
+    return {
+      bgColor: isCamera ? '#000000' : '#1C1C1E',
+      navTitle: isCamera ? 'WB Meter' : (isResult ? 'Result' : (isHistory ? 'History' : 'Settings')),
+      navShowBack: isResult,
+      navShowGear: isCamera,
+      goBackFromResult: this.goBackFromResult,
+      openSettings: this.openSettings,
+      openMeasure: this.openMeasure,
+      openHistory: this.openHistory,
+      isCamera, isMeasuring, isNotMeasuring: !isMeasuring, isResult, isHistory, isSettings,
+      startMeasure: this.startMeasure,
+      shutterRing: isMeasuring ? 'rgba(255,255,255,0.25)' : '#ffffff',
+      shutterFill: isMeasuring ? 'rgba(255,255,255,0.2)' : '#ffffff',
+      shutterOpacity: isMeasuring ? 0.5 : 1,
+      shutterCursor: isMeasuring ? 'default' : 'pointer',
+      progressSegs,
+      stepLabel: Math.min(s.step, n) + ' of ' + n,
+      savedFlash: s.savedFlash,
+      saveLabel: s.savedFlash ? 'Saved \u2713' : 'Save measurement',
+      saveMeasurement: this.saveMeasurement,
+      resultRows: [
+        { label: 'Measured value', value: '4482 K', color: '#EDEDED' },
+        { label: 'Tint', value: 'Slight magenta', color: '#EDEDED' },
+        { label: 'Δuv', value: '\u22120.0021', color: '#EDEDED' },
+        { label: 'Confidence', value: 'High', color: '#30D158' },
+        { label: 'Selected camera', value: selectedCamera, color: '#EDEDED' },
+        { label: 'Camera recommendation', value: '4500 K · M1', color: '#EDEDED' }
+      ],
+      historyRows,
+      selectedCamera,
+      stabilityLabel: n + ' captures',
+      autoSaveTrack: autoSaveOn ? '#0A84FF' : 'rgba(120,120,128,0.32)',
+      autoSaveThumb: autoSaveOn ? 22 : 2,
+      toggleAutoSave: this.toggleAutoSave,
+      debugTrack: s.debugMode ? '#0A84FF' : 'rgba(120,120,128,0.32)',
+      debugThumb: s.debugMode ? 22 : 2,
+      toggleDebug: this.toggleDebug,
+      exportMsg: s.exportMsg,
+      exportData: this.exportData,
+      showTabBar: !isResult,
+      tabMeasureColor: isCamera ? '#0A84FF' : 'rgba(255,255,255,0.4)',
+      tabHistoryColor: isHistory ? '#0A84FF' : 'rgba(255,255,255,0.4)',
+      tabSettingsColor: isSettings ? '#0A84FF' : 'rgba(255,255,255,0.4)'
+    };
+  }
+}
+</script>
+</body>
+</html>
