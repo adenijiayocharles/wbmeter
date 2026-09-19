@@ -1,6 +1,6 @@
 # WB Meter — Product Requirements Document
 
-**Version:** 1.0
+**Version:** 1.1
 **Platform:** iOS First
 **Technology:** Swift / SwiftUI
 **Initial Target:** iPhone
@@ -1167,102 +1167,69 @@ Camera hardware code must remain separate from mathematical code so the majority
 
 ---
 
-# 40. Development Milestones
+# 40. Two-Week Development Phases
 
-## Milestone 1 — Camera
+Plan each phase as a **10-working-day timebox** with one iOS engineer and timely access to the listed devices, test fixtures, and reference equipment. The estimate covers implementation, tests, and a reviewable phase demo. It is not a promise that uncertain hardware or measurement work will fit; if an exit gate fails, reduce supported device/light scope or revise the estimate before starting the next phase. Do not hide incomplete gates by moving them into a later phase.
 
-Deliver:
+The plan contains seven phases (14 weeks total). Phase 0 is implemented in the current repository, but its physical-device exit gate remains open.
 
-* SwiftUI project
-* Camera permissions
-* Camera preview
-* Central grey-card ROI
-* Capture/Measure button
+Keep the first supported phone model explicit in the phase notes. Add device models and lighting types only after the current supported set passes its gates. Keep colour-science calculations testable without camera hardware, and reserve physical checks for camera capture, metadata, and end-to-end measurement.
 
-No Kelvin calculation required.
+### Phase 0 — Camera Foundation (2 weeks; implementation present)
 
-### Acceptance Criteria
+Deliver the SwiftUI app shell, camera permission states, rear-camera preview, central grey-card target, instruction, and Measure control. The control remains a placeholder until the measurement workflow phase.
 
-The application runs on a physical iPhone and displays a functional camera preview with a measurement target.
+**Tests and exit gate:** Build for iOS; check not-determined, authorized, denied, and restricted permission paths; on a physical iPhone verify preview, framing overlay, and stop/restart across background and foreground. Record the tested phone and iOS version. The current repository has the implementation; the physical-device acceptance check remains open.
 
----
+### Phase 1 — Sensor Capture and ROI (2 weeks)
 
-## Milestone 2 — Sensor Measurement
+On one named supported iPhone, choose and document the supported sensor capture path, preferring RAW/DNG when available. Inspect capture metadata, extract a centered ROI, calculate linear sensor-channel statistics, and reject clipped, dark, or insufficient samples. Add a debug readout for channel values and exposure.
 
-Deliver:
+**Tests and exit gate:** Unit-test ROI bounds, clipped/dark-pixel rejection, and statistics using deterministic sample buffers. On the supported phone, verify capture and metadata with a neutral card at valid, overexposed, and underexposed settings. Unsupported capture paths must return a clear error; never substitute processed RGB as calibrated data.
 
-* RAW/DNG-compatible capture where supported
-* Metadata inspection
-* ROI extraction
-* Linear RGB measurement
-* Exposure validation
+### Phase 2 — Calibration and XYZ (2 weeks)
 
-Debug screen must display:
+Parse the selected capture path’s calibration metadata and convert valid linear sensor values to XYZ. Define supported metadata combinations and return explicit errors for missing or invalid calibration. Do not fabricate or silently fall back to an arbitrary matrix.
+
+**Tests and exit gate:** Unit-test metadata parsing, matrix application, invalid inputs, and XYZ results against known fixtures. Verify on-device that a captured sample produces finite XYZ values through the documented calibration path. Document any device or capture mode not supported.
+
+### Phase 3 — Chromaticity, CCT, Δuv, and Kelvin Rounding (2 weeks)
+
+Implement XYZ-to-xy, xy-to-CIE-1960-uv, nearest supported Planckian-locus CCT and signed Δuv, then configurable recommended-Kelvin rounding. Document the calculation method and supported CCT range. Keep unrounded scientific values separate from display formatting.
+
+**Tests and exit gate:** Unit-test each transform, locus/CCT/Δuv calculation, range errors, and rounding against published or otherwise traceable numeric reference cases. The full deterministic test suite must pass without AVFoundation or an iPhone.
+
+### Phase 4 — Measurement Workflow and Confidence (2 weeks)
+
+Connect Measure to the sensor pipeline. Collect and aggregate repeated samples, validate exposure and target coverage, calculate a configurable confidence score, and show result, tint/Δuv, confidence, error states, and Measure Again. Never show plausible values for rejected measurements.
+
+**Tests and exit gate:** Unit-test aggregation, confidence thresholds, invalid results, and workflow state transitions. On the supported phone, run valid, invalid-exposure, unsupported-calibration, repeat-measurement, and Measure Again scenarios. Keep processing off the main thread and verify the preview remains responsive.
+
+### Phase 5 — Local History and Debug Export (2 weeks)
+
+Persist measurements on-device and implement the MVP history list, view, rename, and delete actions. Add JSON and CSV debug export for the documented measurement fields. No account, backend, or image upload is introduced.
+
+**Tests and exit gate:** Test persistence across relaunch, rename/delete behavior, export contents, and malformed or older stored records. On-device, save a measurement, relaunch, and verify the entry and both export formats.
+
+### Phase 6 — Physical Validation and MVP Release Gate (2 weeks)
+
+Build a small, repeatable reference dataset using a known colour meter and the first supported iPhone. Test four representative sources from Section 30 (daylight, tungsten, warm LED, and daylight LED) with at least three repeated readings per source under unchanged conditions. Calculate CCT/Δuv error and repeatability, investigate outliers, and document limits. Agree numerical acceptance tolerances before collecting the release dataset; this PRD does not currently define tolerances.
+
+**Tests and exit gate:** Re-run automated tests and the fixed 12-reading physical test matrix; attach phone, iOS, capture mode, reference readings, and results to the dataset. Release only when agreed tolerances and repeatability gates pass. Do not claim professional-meter accuracy without sufficient physical evidence. Broader devices and lighting types remain follow-up validation work.
+
+### Phase Dependencies
 
 ```text
-RAW R
-RAW G
-RAW B
+Phase 0 → Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5 → Phase 6
 ```
 
----
-
-## Milestone 3 — Colour Science
-
-Implement:
-
-```text
-RAW RGB
-   ↓
-Calibrated XYZ
-   ↓
-xy
-   ↓
-uv
-   ↓
-CCT
-   ↓
-Δuv
-```
-
-Debug screen must display every intermediate result.
-
----
-
-## Milestone 4 — User Measurement
-
-Deliver:
-
-* Measure workflow
-* Kelvin result
-* Tint/Δuv
-* Confidence
-* Invalid-measurement handling
-* Measure Again
-
----
-
-## Milestone 5 — Persistence
-
-Deliver:
-
-* Measurement history
-* Rename
-* Delete
-* JSON debug export
-* CSV debug export
-
----
-
-## Milestone 6 — Physical Validation
-
-Compare application readings against reference measurements across multiple lighting conditions.
-
-Do not aggressively expand the feature set until measurement repeatability and error are understood.
+Each phase ends with a build, automated results where applicable, physical-test evidence where specified, and a short list of known limitations. A phase is complete only when its exit gate passes.
 
 ---
 
 # 41. MVP Acceptance Criteria
+
+Use the phase exit gates in Section 40 to deliver evidence for the following acceptance criteria:
 
 The MVP is complete when:
 
@@ -1345,17 +1312,17 @@ Build the application incrementally.
 
 **Do not attempt to generate the entire production application in one implementation pass.**
 
-For each milestone:
+For each two-week phase:
 
-1. Read the milestone requirements.
+1. Read the phase deliverables, tests, dependencies, and exit gate.
 2. Explain the proposed implementation.
-3. Implement only that milestone.
+3. Implement only that phase.
 4. Ensure the project builds.
 5. Run existing tests.
 6. Add appropriate tests.
 7. Run tests again.
 8. Report assumptions and limitations.
-9. Stop before proceeding to the next milestone.
+9. Stop at the phase exit gate; do not start the next phase in the same pass.
 
 Do not replace difficult colour-science requirements with approximate RGB heuristics without explicitly identifying the limitation.
 
@@ -1367,58 +1334,33 @@ The priority is:
 
 ---
 
-# 44. First Coding Task
+# 44. Next Coding Task
 
-Implement **Milestone 1 only**.
+The Phase 0 camera interface is implemented. Its physical-iPhone acceptance check is still open. After that check passes, implement **Phase 1 — Sensor Capture and ROI only**.
 
 Requirements:
 
 ```text
-SwiftUI
-AVFoundation
-Physical iPhone support
-Camera permission handling
-Live rear-camera preview
-Central grey-card measurement ROI
-Measure button
-Clean separation between camera logic and UI
+RAW/DNG capability investigation on one named iPhone
+Capture metadata inspection
+Centered ROI extraction
+Linear sensor-channel statistics
+Exposure rejection
+Deterministic ROI/exposure tests
 ```
 
-Do **not** implement:
+Do **not** implement during Phase 1:
 
 ```text
-Kelvin calculation
-CCT calculation
-Δuv
-RAW processing
-RGB → XYZ
+RGB → XYZ conversion
+CCT or Δuv calculation
+Confidence scoring
+Measurement history
 Camera profiles
-Backend
-Authentication
-Subscriptions
+Backend, authentication, or subscriptions
 ```
 
-Expected result:
-
-```text
-┌───────────────────────────────┐
-│ WB Meter                      │
-│                               │
-│                               │
-│        ┌─────────────┐        │
-│        │             │        │
-│        │             │        │
-│        │             │        │
-│        └─────────────┘        │
-│                               │
-│ Place grey card inside target │
-│                               │
-│         [ MEASURE ]           │
-│                               │
-└───────────────────────────────┘
-```
-
-The project must compile and run on a physical iPhone before proceeding to Milestone 2.
+The phase must end with passing deterministic tests and documented physical-device capture results. If RAW/DNG access or required metadata is unavailable on the selected device, document the limitation and propose a supported-device policy before continuing.
 
 ---
 
