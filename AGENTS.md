@@ -20,7 +20,7 @@ Keep SwiftUI presentation in `ContentView.swift` and `CameraPreview.swift`. Keep
 
 ## Testing
 
-No test target exists yet. Build after app changes. Add unit tests for future color-science and measurement logic, using known numerical references; those tests should not require camera hardware. Validate camera permission states and live preview on a physical iPhone.
+Run `swift test` for deterministic, Foundation-only ROI and exposure tests. Keep sensor analysis independent of AVFoundation so it remains testable on a Mac. Build with the command above after app changes. Validate RAW/DNG capability and captures on a physical iPhone; a simulator or generic-device build does not verify camera hardware support.
 
 ## Commits and Pull Requests
 
@@ -28,4 +28,4 @@ The repository is newly initialized, so no established commit convention exists.
 
 ## Privacy
 
-Keep camera access on-device. Preserve a clear `NSCameraUsageDescription` in `wbmeter/Info.plist`; never commit credentials or machine-specific settings.
+Keep camera access and temporary capture analysis on-device. Preserve a clear `NSCameraUsageDescription` in `wbmeter/Info.plist`; never commit credentials or machine-specific settings. Never replace unsupported sensor data with processed preview RGB.

@@ -15,6 +15,10 @@ final class CameraService: ObservableObject {
 
     @Published private(set) var authorization: Authorization = .notDetermined
     @Published private(set) var isRunning = false
+    @Published private(set) var captureCapability = "Checking RAW support"
+    @Published private(set) var captureMessage: String?
+    @Published private(set) var captureDiagnostics: SensorCaptureDiagnostics?
+    @Published private(set) var isCapturing = false
 
     private let camera = CameraSessionController()
     var session: AVCaptureSession { camera.session }
@@ -90,12 +94,27 @@ final class CameraService: ObservableObject {
         }
 
         do {
-            try await camera.start()
+            captureCapability = try await camera.start()
             isRunning = true
         } catch {
             authorization = .failed(error.localizedDescription)
             isRunning = false
         }
+    }
+
+    func captureMeasurement() async {
+        guard isRunning, !isCapturing else { return }
+        isCapturing = true
+        captureMessage = "Capturing RAW sensor data…"
+        captureDiagnostics = nil
+
+        do {
+            captureDiagnostics = try await camera.captureRawMeasurement()
+            captureMessage = nil
+        } catch {
+            captureMessage = error.localizedDescription
+        }
+        isCapturing = false
     }
 
     func stop() {

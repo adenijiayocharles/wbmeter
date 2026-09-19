@@ -12,24 +12,29 @@ Track delivery against the two-week phases in [PRD.md, Section 40](PRD.md#40-two
 - [x] Verify the authorized path, live rear-camera preview, target, and instruction on an iPhone.
 - [x] Verify the camera session stops on background and resumes on foreground.
 - [ ] Verify the first-launch not-determined prompt on an iPhone.
-- [ ] Verify the denied state and Settings recovery path on an iPhone.
+- [x] Verify the denied state on an iPhone; the app shows its camera-off explanation and an Open Settings action.
+- [x] Verify camera access can be restored in iPhone Settings and the live preview resumes.
 - [ ] Verify restricted permission handling on an iPhone.
 - [x] Record the test device: iPhone 13 (iPhone14,5), iOS 27.0 (24A437).
 - [ ] Pass the Phase 0 exit gate.
 
-**Device run:** Signed and launched on iPhone 13 (iPhone14,5), iOS 27.0 (24A437). The live preview showed the monitor feed with the ROI and instruction. Opening Settings removed the camera-use indicator; foregrounding WB Meter restored it and resumed the preview. The app’s Camera switch was on in Settings. A temporary fresh bundle also opened with camera access already granted, so the not-determined prompt was not observed. Denied and restricted runtime states remain unverified; the temporary app was removed.
+**Device run:** Signed and launched on iPhone 13 (iPhone14,5), iOS 27.0 (24A437). The live preview showed the monitor feed with the ROI and instruction. Opening Settings removed the camera-use indicator; foregrounding WB Meter restored it and resumed the preview. With Camera permission off, relaunching the app displayed the denied explanation and Open Settings button. After camera access was restored in iPhone Settings, the live rear-camera preview resumed and the camera-use indicator returned. A temporary fresh bundle also opened with camera access already granted, so the not-determined prompt was not observed. Restricted handling remains unverified; the temporary app was removed.
 
 ## Phase 1 — Sensor Capture and ROI
 
-- [ ] Select and record the first supported iPhone model and sensor capture path.
-- [ ] Implement capture and inspect available RAW/DNG and calibration metadata.
-- [ ] Extract a centered ROI and calculate linear sensor-channel statistics.
-- [ ] Reject clipped, underexposed, or insufficient ROI samples with clear errors.
-- [ ] Add a debug readout for channel values and exposure.
-- [ ] Unit-test ROI bounds, sample statistics, and invalid-pixel rejection with deterministic buffers.
+- [x] Select the initial physical test candidate and sensor path: iPhone 13 rear-camera Bayer RAW DNG.
+- [x] Implement Bayer RAW DNG capture and DNG metadata inspection for black/white levels, calibration tags, ISO, and exposure.
+- [ ] Inspect actual captured DNG metadata on a qualifying physical iPhone.
+- [x] Extract a centered 20% RAW sensor ROI and calculate normalized linear Bayer-channel medians.
+- [x] Reject clipped, underexposed, or insufficient ROI samples with clear errors.
+- [x] Add a debug readout for channel values, RAW dimensions, ROI bounds, ISO, exposure, and DNG tags.
+- [x] Unit-test ROI bounds, sample statistics, and clipped, dark, invalid, and insufficient sample rejection with deterministic buffers.
+- [x] Probe the connected iPhone 13 (iPhone14,5) for Bayer RAW/DNG availability; after configuring the still-photo session preset, runtime reports one Bayer RAW DNG format.
 - [ ] On-device, verify metadata and valid, overexposed, and underexposed captures.
-- [ ] Confirm unsupported capture paths report an error without a processed-RGB fallback.
+- [x] Implement explicit unsupported capture errors without a processed-RGB fallback.
 - [ ] Pass the Phase 1 exit gate.
+
+**Device run:** On iPhone 13 (iPhone14,5), iOS 27.0 (24A437), the runtime now advertises one Bayer RAW DNG format after configuring the photo session preset. Before that change the video-oriented `.high` preset exposed none. A real RAW capture is still needed to validate DNG metadata and the valid/overexposed/underexposed paths. Support only devices that advertise Bayer RAW and DNG and produce a capture with usable black/white levels; never fall back to preview RGB. Phase 1 remains open pending those physical checks.
 
 ## Phase 2 — Calibration and XYZ
 

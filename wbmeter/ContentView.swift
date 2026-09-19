@@ -12,35 +12,42 @@ struct ContentView: View {
         VStack(spacing: 0) {
             navigationBar
 
-            ZStack {
-                Color.black
+            GeometryReader { geometry in
+                let roiWidth = geometry.size.width * 0.20
+                let roiHeight = geometry.size.height * 0.20
 
-                if camera.authorization == .authorized {
-                    CameraPreview(session: camera.session)
+                ZStack {
+                    Color.black
 
-                    VStack(spacing: 0) {
+                    if camera.authorization == .authorized {
+                        CameraPreview(session: camera.session)
+
                         MeasurementTarget()
-                            .frame(width: 240, height: 240)
+                            .frame(width: roiWidth, height: roiHeight)
+                            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 
                         Text("Place a grey card inside the frame")
                             .font(.subheadline)
                             .foregroundStyle(.white.opacity(0.72))
                             .multilineTextAlignment(.center)
-                            .padding(.top, 28)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .position(
+                                x: geometry.size.width / 2,
+                                y: geometry.size.height / 2 + roiHeight / 2 + 30
+                            )
 
-                    Label(camera.statusText, systemImage: camera.statusSymbol)
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(camera.isRunning ? Color.green : Color.secondary)
-                        .accessibilityElement(children: .combine)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                        .padding(.top, 14)
-                        .padding(.leading, 16)
-                } else {
-                    permissionPrompt
-                        .padding(32)
+                        Label(camera.statusText, systemImage: camera.statusSymbol)
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(camera.isRunning ? Color.green : Color.secondary)
+                            .accessibilityElement(children: .combine)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                            .padding(.top, 14)
+                            .padding(.leading, 16)
+                    } else {
+                        permissionPrompt
+                            .padding(32)
+                    }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .clipped()
@@ -61,7 +68,14 @@ struct ContentView: View {
         } message: { notice in
             Text(notice.message)
         }
-        .task { await camera.requestAccessAndStart() }
+        .task {
+            await camera.requestAccessAndStart()
+            #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("--capture-raw-on-launch") {
+                await camera.captureMeasurement()
+            }
+            #endif
+        }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .active:
@@ -140,27 +154,56 @@ struct ContentView: View {
     }
 
     private var measureControl: some View {
-        Button {
-            activeNotice = .measurement
-        } label: {
-            ZStack {
-                Circle()
-                    .stroke(.white.opacity(camera.isRunning ? 1 : 0.45), lineWidth: 3.5)
-                    .frame(width: 74, height: 74)
-                Circle()
-                    .fill(.white.opacity(camera.isRunning ? 1 : 0.45))
-                    .frame(width: 60, height: 60)
+        VStack(spacing: 12) {
+            if let diagnostics = camera.captureDiagnostics {
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(diagnostics.debugLines, id: \.self) { line in
+                        Text(line)
+                            .lineLimit(2)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+                .font(.system(.caption2, design: .monospaced))
+                .foregroundStyle(.white.opacity(0.78))
+                .padding(.horizontal, 18)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("RAW sensor capture details")
+            } else if let message = camera.captureMessage {
+                Text(message)
+                    .font(.footnote)
+                    .foregroundStyle(camera.isCapturing ? Color.secondary : Color.white.opacity(0.78))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 24)
+            } else {
+                Text(camera.captureCapability)
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.60))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 18)
             }
-            .frame(width: 80, height: 80)
-            .contentShape(Circle())
+
+            Button {
+                Task { await camera.captureMeasurement() }
+            } label: {
+                ZStack {
+                    Circle()
+                        .stroke(.white.opacity(camera.isRunning && !camera.isCapturing ? 1 : 0.45), lineWidth: 3.5)
+                        .frame(width: 74, height: 74)
+                    Circle()
+                        .fill(.white.opacity(camera.isRunning && !camera.isCapturing ? 1 : 0.45))
+                        .frame(width: 60, height: 60)
+                }
+                .frame(width: 80, height: 80)
+                .contentShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .disabled(!camera.isRunning || camera.isCapturing)
+            .accessibilityLabel(camera.isCapturing ? "Capturing RAW sensor data" : "Measure")
+            .accessibilityHint("Captures a RAW Bayer sample and reports linear channel levels for the central region.")
         }
-        .buttonStyle(.plain)
-        .disabled(!camera.isRunning)
-        .accessibilityLabel("Measure")
-        .accessibilityHint("Measurement capture is not available in this milestone.")
         .frame(maxWidth: .infinity)
-        .padding(.top, 14)
-        .padding(.bottom, 24)
+        .padding(.top, 12)
+        .padding(.bottom, 20)
         .background(Color.black)
     }
 
@@ -169,19 +212,11 @@ struct ContentView: View {
         case measurement
 
         var title: String {
-            switch self {
-            case .settings: "Settings"
-            case .measurement: "Measurement capture isn’t available yet"
-            }
+            "Settings"
         }
 
         var message: String {
-            switch self {
-            case .settings:
-                "Additional camera settings will be available in a later milestone."
-            case .measurement:
-                "The camera preview is ready. Capture and measurement will be added in a later milestone."
-            }
+            "Additional camera settings will be available in a later milestone."
         }
     }
 }

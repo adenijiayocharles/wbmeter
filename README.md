@@ -4,7 +4,7 @@ WB Meter is an iPhone white-balance measurement app. The product requirements an
 
 ## Current Status
 
-Milestone 1 provides a SwiftUI camera screen with camera permission handling, a live rear-camera preview, a central grey-card target, instructions, and a Measure control. The Measure control is a placeholder: this milestone does not capture images or calculate measurements. Settings are also a placeholder.
+Phase 1 adds on-device Bayer RAW DNG capture and linear sensor-channel sampling within a centered ROI. It does not calculate Kelvin, CCT, Δuv, or confidence, and it does not save or upload captures. Camera settings remain a placeholder.
 
 ## Requirements
 
@@ -25,15 +25,23 @@ xcodebuild -project wbmeter.xcodeproj \
 
 To install and run the app, open `wbmeter.xcodeproj` in Xcode, select a connected iPhone, configure signing for your Apple developer team, and run the `wbmeter` scheme. The app requests camera permission on first launch. If permission was denied, enable it in iOS Settings and return to the app.
 
+Run the deterministic ROI and exposure tests from the repository root:
+
+```sh
+swift test
+```
+
 ## Camera Architecture
 
 - `CameraService.swift` checks camera authorization and publishes app-facing camera state.
 - `CameraSessionController.swift` configures and starts or stops the AVFoundation capture session on a serial queue.
+- `RawPhotoCapture.swift` requests Bayer RAW DNG data, reads capture/DNG metadata, and analyzes the raw buffer without saving the image.
+- `SensorROIAnalyzer.swift` extracts a centered 20% sensor ROI, normalizes Bayer samples using DNG black/white levels, reports channel medians, and rejects invalid exposure.
 - `CameraPreview.swift` displays the session using `AVCaptureVideoPreviewLayer`.
 - `ContentView.swift` contains the permission prompts, measurement target, instructions, and controls.
 
-The app declares `NSCameraUsageDescription` in `wbmeter/Info.plist`. It attaches no capture output and does not save or upload images.
+The app declares `NSCameraUsageDescription` in `wbmeter/Info.plist`. Capture requires a rear camera that advertises Bayer RAW and DNG support. Unsupported paths show an error and never fall back to processed preview RGB. Captures and analysis remain on-device.
 
 ## Validation
 
-The generic iOS build checks compilation only. Verify the permission prompt, live rear-camera preview, target overlay, and app foreground/background behavior on a physical iPhone. The simulator does not provide a normal camera feed. No automated test target exists yet.
+The generic iOS build checks compilation only. Verify camera behavior on a physical iPhone; the simulator does not provide a normal camera feed. `swift test` runs the deterministic, Foundation-only ROI/exposure suite without camera hardware.
